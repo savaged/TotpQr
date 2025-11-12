@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="TotpQr.TotpUriDataView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TotpQr"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter"/>
+        <local:ZeroToEmptyConverter x:Key="ZeroToEmptyConverter"/> 
+        <local:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <Grid VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Column="0" Grid.Row="0">Site</Label>
+        <Label Grid.Column="0" Grid.Row="1">Email</Label>
+        <Label Grid.Column="0" Grid.Row="2">Secret</Label>
+        <TextBox Grid.Column="1" Grid.Row="0" TabIndex="0"
+                 Text="{Binding Model.Site, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Grid.Column="1" Grid.Row="1" TabIndex="1"
+                 Text="{Binding Model.Email, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Grid.Column="1" Grid.Row="2" TabIndex="2"
+                 Text="{Binding Model.Secret, UpdateSourceTrigger=PropertyChanged}"/>
+        <WrapPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+            <WrapPanel Visibility="{Binding IsQrCoded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Label>Code</Label>
+                <TextBox Width="100" Text="{Binding TotpCode, Converter={StaticResource ZeroToEmptyConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Width="80" Content="Verify" Command="{Binding VerifyCommand}"/>
+            </WrapPanel>
+            <Button Width="80" Content="Save" IsDefault="True" TabIndex="3" Command="{Binding SaveCommand}"/>
+        </WrapPanel>
+        <Image Grid.Column="2" Grid.Row="0" Grid.RowSpan="4" Margin="0"
+               Source="{Binding QrCode, Converter={StaticResource ByteArrayToImageSourceConverter}}"/>
+        <TextBlock Grid.Column="2" Grid.Row="4" HorizontalAlignment="Center" Margin="0,-5,0,0"
+                   Visibility="{Binding IsValidQrCode, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   Text="✓" FontSize="20" Foreground="LimeGreen"/>
+        <TextBlock Grid.Column="2" Grid.Row="4" HorizontalAlignment="Center" Margin="0,-5,0,0"
+                   Visibility="{Binding IsValidQrCode, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"
+                   Text="✗" FontSize="20" Foreground="Red"/>
+    </Grid>
+</UserControl>
